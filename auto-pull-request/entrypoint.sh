@@ -17,7 +17,7 @@ if [[ "$(jq -r ".head_commit" "$GITHUB_EVENT_PATH")" == "null" ]]; then
 	exit 78
 fi
 
-commit_message="$(jq -r ".head_commit.message" "$GITHUB_EVENT_PATH")"
+commit_message="$(jq ".head_commit.message" "$GITHUB_EVENT_PATH")"
 
 echo "Commit message:"
 echo "$commit_message"
@@ -32,7 +32,7 @@ PULLS_URI="${URI}/repos/$REPO_FULLNAME/pulls"
 API_HEADER="Accept: application/vnd.github.shadow-cat-preview"
 AUTH_HEADER="Authorization: token $GITHUB_TOKEN"
 
-new_pr_resp=$(curl --data "{\"title\":\"$commit_message\", \"head\": \"$GITHUB_REF\", \"draft\": true, \"base\": \"$DEFAULT_BRANCH\"}" -X POST -s -H "${AUTH_HEADER}" -H "${API_HEADER}" ${PULLS_URI})
+new_pr_resp=$(curl --data "{\"title\":$commit_message, \"head\": \"$GITHUB_REF\", \"draft\": true, \"base\": \"$DEFAULT_BRANCH\"}" -X POST -s -H "${AUTH_HEADER}" -H "${API_HEADER}" ${PULLS_URI})
 
 echo "$new_pr_resp"
 echo "created pull request"
